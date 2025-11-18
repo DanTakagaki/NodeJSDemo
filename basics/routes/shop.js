@@ -8,13 +8,17 @@ const adminData = require('./admin');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-    //manual way
+    // manual way
     // console.log(adminData.products);
     // res.sendFile(path.join(rootDir, 'views', 'shop.html')); //express allow us to send response as result sintax sugar
 
-    //PUG Jade template and use render using view engine Pug
-    res.render('shop', { prods: adminData.products, pageTitle: 'Shop', path: '/'})
+    // PUG Jade template and use render using view engine Pug
+    // res.render('shop', { prods: adminData.products, pageTitle: 'Shop', path: '/'})
 
+    // express-handlers template template engine using view engine express-handlers
+    // does not run logic just variables
+    const products = adminData.products
+    res.render('shop', { prods: products, pageTitle: 'Shop', path: '/', hasProducts: products.length > 0})
 });
 
 module.exports = router;
