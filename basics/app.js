@@ -29,7 +29,7 @@ app.use((req, res, next) => {
     res.status(404).sendFile(path.join(__dirname, 'views', 'not-found.html')); //express allow us to send response as result sintax sugar
 
     //PUG Jade template and use render using view engine Pug
-    res.status(404).render('not-found');
+    res.status(404).render('not-found', { pageTitle: 'Page Not Found' });
 });
 
 //Express has methods for this

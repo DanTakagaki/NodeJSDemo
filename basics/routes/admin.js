@@ -13,7 +13,7 @@ router.get('/add-product', (req, res, next) => {
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html')); //express allow us to send response as result sintax sugar
 
     //PUG Jade template and use render using view engine Pug
-    res.render('add-product', { pageTitle: 'Add Product'})
+    res.render('add-product', { pageTitle: 'Add Product', path: '/admin/add-product'})
 });
 
 //get is for  use methods for GET requests. also has  for otheres http methods
