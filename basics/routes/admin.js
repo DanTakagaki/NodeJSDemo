@@ -4,11 +4,10 @@ const express = require('express');
 
 const router = express.Router();
 
-const productsController = require('../controllers/products');
+const adminController = require('../controllers/admin');
 
-router.get('/add-product', productsController.getAddProduct);
-
-//get is for  use methods for GET requests. also has  for otheres http methods
-router.post('/add-product', productsController.postAddProduct);
+router.get('/add-product', adminController.getAddProduct);
+router.post('/add-product', adminController.postAddProduct);
+router.get('/products', adminController.getProducts);
 
 module.exports = router;
