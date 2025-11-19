@@ -9,6 +9,8 @@ const shopRoutes = require('./routes/shop');
 
 const app = express();
 
+const errorController = require('./controllers/error.js')
+
 //template engine dependency with express-handlebars
 // const { engine } = require('express-handlebars');
 
@@ -37,16 +39,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Adding filters in express to add paths
-app.use('/admin', adminRoutes.routes);
+app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-app.use((req, res, next) => {
-    // Manual way
-    res.status(404).sendFile(path.join(__dirname, 'views', 'not-found.html')); //express allow us to send response as result sintax sugar
-
-    //PUG Jade template and use render using view engine Pug
-    res.status(404).render('not-found', { pageTitle: 'Page Not Found', path: ''});
-});
+app.use(errorController.getNotFound);
 
 //Express has methods for this
 //const routes = require('./routes');

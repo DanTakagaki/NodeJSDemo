@@ -5,8 +5,11 @@
 }
 
 .product-item {
+    display: flex !important;
+    flex-direction: row !important;
     width: 20rem;
     max-width: 95%;
+    margin-bottom: 1rem;
 }
 
 .product__title {
