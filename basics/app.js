@@ -7,6 +7,8 @@ const express = require('express');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
+const formatPrice = require('./utils/formatters');
+
 const app = express();
 
 const errorController = require('./controllers/error.js')
@@ -30,6 +32,11 @@ app.set('view engine', 'ejs');
 //--
 
 app.set('views', 'basics/views');
+
+app.use((req, res, next) => {
+    res.locals.formatPrice = formatPrice;
+    next();
+});
 
 app.use('/', (req, res, next) => {
     console.log('Allways runs top to bottom');

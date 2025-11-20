@@ -9,15 +9,6 @@ const newPath = path.join(
 
 const DEFAULT_IMAGE = 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png';
 
-const formatPrice = (price) => {
-    if (!price || price === '' || price === null || price === undefined) {
-       return 'Out of Stock';
-    }
-    // Remove any existing $ and spaces, then add $
-    const cleanPrice = String(price).replace(/[$\s]/g, '');
-    return `$${cleanPrice}`;
-}
-
 const getProductsFromFile = cb => {
     fs.readFile(newPath, (err, fileContent) => {
         if (err) {
@@ -27,10 +18,11 @@ const getProductsFromFile = cb => {
         // Parse and normalize products
         const products = JSON.parse(fileContent);
         const normalized = products.map(p => ({
+            id: p.id,
             image: p.image || DEFAULT_IMAGE,
             title: p.title || '',
             description: p.description || '',
-            price: formatPrice(p.price)
+            price: p.price || 0.00
         }));
         
         cb(normalized);
@@ -48,6 +40,7 @@ module.exports = class Product {
     }
 
     save() {
+        this.id = Math.random().toString();
         getProductsFromFile(products => {
             products.push(this);
             fs.writeFile(newPath, JSON.stringify(products), (err) => {
@@ -59,4 +52,11 @@ module.exports = class Product {
     static fetchAll(cb) {
         getProductsFromFile(cb);
     }
+
+    static findById(id, cb) {
+        getProductsFromFile(products => {
+            const product = products.find(iterator => iterator.id === id);
+            cb(product);
+        });
+    };
 }
