@@ -2,12 +2,12 @@ const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
     // manual way
-    // res.sendFile(path.join(rootDir, 'views', 'add-product.html')); //express allow us to send response as result sintax sugar
+    // res.sendFile(path.join(rootDir, 'views', 'edit-product.html')); //express allow us to send response as result sintax sugar
 
     //PUG Jade template and use render using view engine Pug
-    res.render('admin/add-product', {
+    res.render('admin/edit-product', {
         pageTitle: 'Add Product',
-        path: '/admin/add-product',
+        path: '/admin/edit-product',
         formsCSS: true,
         productCSS: true,
         activeAddProduct: true
