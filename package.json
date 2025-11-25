@@ -8,7 +8,8 @@
   "main": "./basics-locally/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./basics-locally/app.js"
+    "start:local": "nodemon ./basics-locally/app.js",
+    "start:mysql": "nodemon ./basics-sql/app.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

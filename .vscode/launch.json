@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Local App",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -15,6 +15,23 @@
             "restart": true,
             "runtimeExecutable": "nodemon",
             "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "MySQL App",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/basics-mysql/app.js",
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/basics-mysql/.env",
+            "env": {
+                "PORT": "4000",
+                "NODE_ENV": "development"
+            }
         }
     ]
 }
