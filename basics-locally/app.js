@@ -7,10 +7,10 @@ const express = require('express');
 require('dotenv').config();
 const mysql = require('mysql2');
 
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+const adminRoutes = require('./routes/admin.js');
+const shopRoutes = require('./routes/shop.js');
 
-const formatPrice = require('./utils/formatters');
+const formatPrice = require('./utils/formatters.js');
 
 const app = express();
 
@@ -34,7 +34,7 @@ const errorController = require('./controllers/error.js')
 app.set('view engine', 'ejs');
 //--
 
-app.set('views', 'basics/views');
+app.set('views', 'basics-locally/views');
 
 app.use((req, res, next) => {
     res.locals.formatPrice = formatPrice;

@@ -5,10 +5,10 @@
   "license": "ISC",
   "author": "Daniel Takagaki",
   "type": "commonjs",
-  "main": "./basics/app.js",
+  "main": "./basics-locally/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./basics/app.js"
+    "start": "nodemon ./basics-locally/app.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
