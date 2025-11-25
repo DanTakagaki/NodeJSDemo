@@ -2,25 +2,18 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
-        // manual way
-        // console.log(products);
-        // res.sendFile(path.join(rootDir, 'views', 'shop.html')); //express allow us to send response as result sintax sugar
-
-        // PUG Jade template and use render using view engine Pug
-        // res.render('shop', { prods: products, pageTitle: 'Shop', path: '/'})
-
-        // express-handlers template template engine using view engine express-handlers
-        // does not run logic just variables
-        console.log(products);
-
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            path: '/products',
-            hasProducts: products.length > 0
-        }) // This last one is fot .hbs View
-    });
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            console.log(rows)
+            res.render('shop/product-list', {
+                prods: rows,
+                pageTitle: 'All Products',
+                path: '/products'
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 exports.getProduct = (req, res, next) => {
@@ -44,38 +37,46 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll((products) => {
-        console.log(products);
-
-        res.render('shop/index', {
-            prods: products,
-            pageTitle: 'Shop',
-            path: '/',
-            hasProducts: products.length > 0 // This last one is fot .hbs View
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            console.log(rows)
+            res.render('shop/index', {
+                prods: rows,
+                pageTitle: 'Shop',
+                path: '/'
+            });
+        })
+        .catch(err => {
+            console.log(err);
         });
-    });
 };
 
 exports.getCart = (req, res, next) => {
     Cart.getCart(cart => {
-        Product.fetchAll(products => {
+        Product.fetchAll()
+        .then(([rows, fieldData]) => {
             const cartProducts = [];
+
             if (cart && cart.products && cart.products.length > 0) {
-                for (product of products) {
+                for (product of rows) {
                     const cartProductData = cart.products.find(
-                        prod => prod.id === product.id
+                        prod => prod.id === rows.id
                     );
                     if (cartProductData) {
                         cartProducts.push({ productData: product, qty: cartProductData.qty });
                     }
                 }
             }
+
             res.render('shop/cart', {
                 pageTitle: 'Your Cart',
                 products: cartProducts,
                 totalPrice: cart.totalPrice,
                 path: '/cart'
             });
+        })
+        .catch(err => {
+            console.log(err);
         });
     });
 };
