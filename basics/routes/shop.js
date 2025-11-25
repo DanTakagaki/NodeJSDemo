@@ -13,6 +13,7 @@ router.get('/products/:productId', shopController.getProduct); //Add dynamic val
 
 router.get('/cart', shopController.getCart);
 router.post('/cart', shopController.postCart);
+router.post('/cart-delete-item', shopController.postCartDeleteProduct);
 router.get('/add-to-cart', shopController.getCart);
 
 router.post('/orders', shopController.getCart);

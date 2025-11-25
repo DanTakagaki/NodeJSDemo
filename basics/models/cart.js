@@ -50,24 +50,27 @@ module.exports = class Cart {
                 return cb({ products: [], totalPrice: 0 });
             }
             const cart = JSON.parse(fileContent);
-            if(!cart.products) {
+            if (!cart.products) {
                 cart.products = [];
             }
-            if(!cart.totalPrice) {
+            if (!cart.totalPrice) {
                 cart.totalPrice = 0;
             }
-            
+
             cb(cart);
         });
-    }   
+    }
 
     static deleteProduct(productId, productPrice) {
         fs.readFile(newPath, (err, fileContent) => {
             if (err) {
                 return;
             }
-            const updatedCart = { ...JSON.parse(fileContent)};
+            const updatedCart = { ...JSON.parse(fileContent) };
             const product = updatedCart.products.find(prod => prod.id === productId);
+            if (!product) {
+                return;
+            }
             const productQty = product.qty;
             
             updatedCart.products = updatedCart.products.filter(prod => prod.id !== productId);

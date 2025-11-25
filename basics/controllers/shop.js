@@ -88,6 +88,17 @@ exports.postCart = (req, res, next) => {
     res.redirect('/cart');
 };
 
+exports.postCartDeleteProduct = (req, res, next) => {
+    const productId = req.body.productId;
+    Product.findById(productId, product => {
+        if (!product) {
+            return res.redirect('/cart');
+        }
+        Cart.deleteProduct(productId, product.price);
+        res.redirect('/cart');
+    });
+};
+
 exports.getOrders = (req, res, next) => {
     res.render('shop/orders', {
         pageTitle: 'Your Orders',
