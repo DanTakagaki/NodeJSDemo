@@ -15,18 +15,20 @@ module.exports = class Product {
     }
 
     save() {
-        
+        //to avoid SQL injection attacks, use ? as placeholder for values
+        return db.execute('INSERT INTO products (title, price, imageUrl, description) VALUES (?, ?, ?, ?)',
+            [this.title, this.price, this.image, this.description]);
     }
 
-    static fetchAll(cb) {
+    static fetchAll() {
         return db.execute('SELECT * FROM products');
     }
 
-    static findById(id, cb) {
-        
+    static findById(id) {
+        return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
     };
 
     static deleteById(id) {
-        
+
     };
 }

@@ -34,7 +34,7 @@ const errorController = require('./controllers/error.js')
 app.set('view engine', 'ejs');
 //--
 
-app.set('views', 'basics-locally/views');
+app.set('views', 'basics-sql/views');
 
 app.use((req, res, next) => {
     res.locals.formatPrice = formatPrice;

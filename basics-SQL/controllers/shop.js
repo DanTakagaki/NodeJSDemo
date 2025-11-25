@@ -18,10 +18,10 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findById(productId, product => {
-        console.log(product);
-
-        if (!product) {
+    Product.findById(productId)
+    .then(([products]) => {
+        console.log(products);
+        if (products.length === 0) {
             return res.status(404).render('404', {
                 pageTitle: 'Product Not Found',
                 path: '/products'
@@ -29,10 +29,13 @@ exports.getProduct = (req, res, next) => {
         }
 
         res.render('shop/product-details', {
-            product: product,
-            pageTitle: product.title,
+            product: products[0],
+            pageTitle: products.title,
             path: '/products'
         });
+    })
+    .catch(err => {
+        console.log(err);
     });
 };
 
