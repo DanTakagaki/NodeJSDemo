@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 #local cache files
 cart.json
 products.json
+
+#NodeJS
+node_modules/
+.env
+*.log
+

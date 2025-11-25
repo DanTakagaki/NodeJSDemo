@@ -4,6 +4,9 @@ const path = require('path');
 
 const express = require('express');
 
+require('dotenv').config();
+const mysql = require('mysql2');
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
