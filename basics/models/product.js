@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const cart = require('./cart');
+
 const newPath = path.join(
     path.dirname(require.main.filename),
     'data',
@@ -14,7 +16,7 @@ const getProductsFromFile = cb => {
         if (err) {
             return cb([]);
         }
-        
+
         // Parse and normalize products
         const products = JSON.parse(fileContent);
         const normalized = products.map(p => ({
@@ -24,15 +26,15 @@ const getProductsFromFile = cb => {
             description: p.description || '',
             price: p.price || 0.00
         }));
-        
+
         cb(normalized);
     });
 };
 
 module.exports = class Product {
-    constructor(image, title, description, price) {
+    constructor(id, image, title, description, price) {
         const DEFAULT_IMAGE = 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png';
-        
+        this.id = id;
         this.image = image || DEFAULT_IMAGE;
         this.title = title || 'Untitled Product';
         this.description = description || 'No description available';
@@ -40,12 +42,22 @@ module.exports = class Product {
     }
 
     save() {
-        this.id = Math.random().toString();
         getProductsFromFile(products => {
-            products.push(this);
-            fs.writeFile(newPath, JSON.stringify(products), (err) => {
-                console.log(err);
-            })
+
+            if (this.id) {
+                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+                const updatedProducts = [...products];
+                updatedProducts[existingProductIndex] = this;
+                fs.writeFile(newPath, JSON.stringify(updatedProducts), (err) => {
+                    console.log(err);
+                });
+            } else {
+                this.id = Math.random().toString();
+                products.push(this);
+                fs.writeFile(newPath, JSON.stringify(products), (err) => {
+                    console.log(err);
+                })
+            }
         });
     }
 
@@ -57,6 +69,20 @@ module.exports = class Product {
         getProductsFromFile(products => {
             const product = products.find(iterator => iterator.id === id);
             cb(product);
+        });
+    };
+
+    static deleteById(id) {
+        getProductsFromFile(products => {
+            const product = products.find(prod => prod.id === id);
+            const updatedProducts = products.filter(prod => prod.id !== id);
+            fs.writeFile(newPath, JSON.stringify(updatedProducts), (err) => {
+                if (!err) {
+                    cart.deleteProduct(id, product.price);
+                } else {
+                    console.log(err);
+                }
+            });
         });
     };
 }
