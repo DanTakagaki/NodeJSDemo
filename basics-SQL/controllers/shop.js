@@ -53,7 +53,7 @@ exports.getProduct = (req, res, next) => {
 
     const productId = req.params.productId;
     Product.findByPk(productId)
-         .then((product) => {
+        .then((product) => {
             console.log(product);
             if (product.length === 0) {
                 return res.status(404).render('404', {
@@ -101,33 +101,50 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    Cart.getCart(cart => {
-        Product.fetchAll()
-            .then(([rows, fieldData]) => {
-                const cartProducts = [];
+    // Manual SQL way
+    // Cart.getCart(cart => {
+    //     Product.fetchAll()
+    //         .then(([rows, fieldData]) => {
+    //             const cartProducts = [];
 
-                if (cart && cart.products && cart.products.length > 0) {
-                    for (product of rows) {
-                        const cartProductData = cart.products.find(
-                            prod => prod.id === rows.id
-                        );
-                        if (cartProductData) {
-                            cartProducts.push({ productData: product, qty: cartProductData.qty });
-                        }
-                    }
-                }
+    //             if (cart && cart.products && cart.products.length > 0) {
+    //                 for (product of rows) {
+    //                     const cartProductData = cart.products.find(
+    //                         prod => prod.id === rows.id
+    //                     );
+    //                     if (cartProductData) {
+    //                         cartProducts.push({ productData: product, qty: cartProductData.qty });
+    //                     }
+    //                 }
+    //             }
 
-                res.render('shop/cart', {
-                    pageTitle: 'Your Cart',
-                    products: cartProducts,
-                    totalPrice: cart.totalPrice,
-                    path: '/cart'
-                });
-            })
-            .catch(err => {
-                console.log(err);
+    //             res.render('shop/cart', {
+    //                 pageTitle: 'Your Cart',
+    //                 products: cartProducts,
+    //                 totalPrice: cart.totalPrice,
+    //                 path: '/cart'
+    //             });
+    //         })
+    //         .catch(err => {
+    //             console.log(err);
+    //         });
+    // });
+
+    // Sequelize way
+    console.log(req.user.cart);
+    req.user
+        .getCart()
+        .then(cart => {
+            return cart.getProducts()
+        })
+        .then(products => {
+            res.render('shop/cart', {
+                pageTitle: 'Your Cart',
+                products: products,
+                path: '/cart'
             });
-    });
+        })
+        .catch(err => console.log(err));
 };
 
 exports.postCart = (req, res, next) => {

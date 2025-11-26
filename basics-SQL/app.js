@@ -9,6 +9,8 @@ const mysql = require('mysql2');
 const sequelize = require('./utils/database.js');
 const Product = require('./models/product.js');
 const User = require('./models/user.js');
+const Cart = require('./models/cart.js');
+const CartItem = require('./models/cart-item.js');
 
 const adminRoutes = require('./routes/admin.js');
 const shopRoutes = require('./routes/shop.js');
@@ -56,6 +58,11 @@ app.use(errorController.getNotFound);
 // Define relations between models
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+
 // Syncing database and starting server
 sequelize.sync() //sync models to database. force = true only on dev to override relations is needed
     .then(result => {
@@ -66,12 +73,13 @@ sequelize.sync() //sync models to database. force = true only on dev to override
         if (!user) {
             return User.create({ name: 'Dan', email: 'taka@test.com' });
         }
-        return Promise.resolve(user);
+        return user;
     })
     .then(user => {
-        console.log(user);
+        return user.createCart()
+    })
+    .then(cart => {
         app.listen(3000); // express sinstax sugar
-
     })
     .catch(err => {
         console.log(err);
