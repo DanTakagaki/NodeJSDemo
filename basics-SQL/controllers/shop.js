@@ -55,7 +55,7 @@ exports.getProduct = (req, res, next) => {
     Product.findByPk(productId)
         .then((product) => {
             console.log(product);
-            if (product.length === 0) {
+            if (!product) {
                 return res.status(404).render('404', {
                     pageTitle: 'Product Not Found',
                     path: '/products'
@@ -149,10 +149,46 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
-    Product.findById(productId, product => {
-        Cart.addProduct(productId, product.price);
-    });
-    res.redirect('/cart');
+    let fetchedCart;
+    let newQuantity = 1;
+    req.user
+        .getCart()
+        .then(cart => {
+            console.log('2. Cart found:', cart ? cart.id : 'NO CART');
+            fetchedCart = cart;
+            return cart.getProducts({ where: { id: productId } });
+        })
+        .then(products => {
+            console.log('3. Products in cart:', products.length);
+            let product;
+            if (products.length > 0) {
+                product = products[0];
+                console.log('4. Product already in cart, quantity:', product.cartItem.quantity);
+            }
+
+            if (product) {
+                const oldQuantity = product.cartItem.quantity;
+                newQuantity = oldQuantity + 1;
+                console.log('5. Updating quantity to:', newQuantity);
+                return fetchedCart.addProduct(product, { through: { quantity: newQuantity } });
+            }
+
+            console.log('6. Adding new product to cart');
+            return Product.findByPk(productId)
+                .then(product => {
+                    console.log('7. Product found:', product ? product.title : 'NOT FOUND');
+                    return fetchedCart.addProduct(product, {
+                         through: { quantity: newQuantity }
+                        });
+                })
+        })
+        .then(() => {
+            res.redirect('/cart'); 
+        })
+        .catch(err => {
+            console.log('✗ ERROR:', err);
+            console.log(err)
+        });
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {

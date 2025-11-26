@@ -64,7 +64,9 @@ Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
 // Syncing database and starting server
-sequelize.sync() //sync models to database. force = true only on dev to override relations is needed
+sequelize
+    .sync()
+    //.sync({ force: true }) //sync models to database. force = true only on dev to override relations is needed
     .then(result => {
         // Hardcoding user creation for testing purposes
         return User.findOne({ where: { email: 'taka@test.com' } });
@@ -76,7 +78,14 @@ sequelize.sync() //sync models to database. force = true only on dev to override
         return user;
     })
     .then(user => {
-        return user.createCart()
+        return user.getCart()
+            .then(cart => {
+                console.log(cart);
+                if (!cart) {
+                    return user.createCart();
+                }
+                return cart;
+            });
     })
     .then(cart => {
         app.listen(3000); // express sinstax sugar
