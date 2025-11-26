@@ -2,6 +2,7 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
+    // Manual SQL way
     Product.fetchAll()
         .then(([rows, fieldData]) => {
             console.log(rows)
@@ -19,68 +20,80 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
     const productId = req.params.productId;
     Product.findById(productId)
-    .then(([products]) => {
-        console.log(products);
-        if (products.length === 0) {
-            return res.status(404).render('404', {
-                pageTitle: 'Product Not Found',
+        .then(([products]) => {
+            console.log(products);
+            if (products.length === 0) {
+                return res.status(404).render('404', {
+                    pageTitle: 'Product Not Found',
+                    path: '/products'
+                });
+            }
+
+            res.render('shop/product-details', {
+                product: products[0],
+                pageTitle: products.title,
                 path: '/products'
-            });
-        }
-
-        res.render('shop/product-details', {
-            product: products[0],
-            pageTitle: products.title,
-            path: '/products'
-        });
-    })
-    .catch(err => {
-        console.log(err);
-    });
-};
-
-exports.getIndex = (req, res, next) => {
-    Product.fetchAll()
-        .then(([rows, fieldData]) => {
-            console.log(rows)
-            res.render('shop/index', {
-                prods: rows,
-                pageTitle: 'Shop',
-                path: '/'
             });
         })
         .catch(err => {
             console.log(err);
         });
+};
+
+exports.getIndex = (req, res, next) => {
+    // Manual SQL way
+    // Product.fetchAll()
+    //     .then(([rows, fieldData]) => {
+    //         console.log(rows)
+    //         res.render('shop/index', {
+    //             prods: rows,
+    //             pageTitle: 'Shop',
+    //             path: '/'
+    //         });
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //     });
+
+    // Sequelize way
+    Product.findAll()
+        .then(products => {
+            res.render('shop/index', {
+                prods: products,
+                pageTitle: 'Shop',
+                path: '/'
+            });
+        })
+        .catch(err => console.log(err));
 };
 
 exports.getCart = (req, res, next) => {
     Cart.getCart(cart => {
         Product.fetchAll()
-        .then(([rows, fieldData]) => {
-            const cartProducts = [];
+            .then(([rows, fieldData]) => {
+                const cartProducts = [];
 
-            if (cart && cart.products && cart.products.length > 0) {
-                for (product of rows) {
-                    const cartProductData = cart.products.find(
-                        prod => prod.id === rows.id
-                    );
-                    if (cartProductData) {
-                        cartProducts.push({ productData: product, qty: cartProductData.qty });
+                if (cart && cart.products && cart.products.length > 0) {
+                    for (product of rows) {
+                        const cartProductData = cart.products.find(
+                            prod => prod.id === rows.id
+                        );
+                        if (cartProductData) {
+                            cartProducts.push({ productData: product, qty: cartProductData.qty });
+                        }
                     }
                 }
-            }
 
-            res.render('shop/cart', {
-                pageTitle: 'Your Cart',
-                products: cartProducts,
-                totalPrice: cart.totalPrice,
-                path: '/cart'
+                res.render('shop/cart', {
+                    pageTitle: 'Your Cart',
+                    products: cartProducts,
+                    totalPrice: cart.totalPrice,
+                    path: '/cart'
+                });
+            })
+            .catch(err => {
+                console.log(err);
             });
-        })
-        .catch(err => {
-            console.log(err);
-        });
     });
 };
 

@@ -6,6 +6,7 @@ const express = require('express');
 
 require('dotenv').config();
 const mysql = require('mysql2');
+const sequelize = require('./utils/database.js');
 
 const adminRoutes = require('./routes/admin.js');
 const shopRoutes = require('./routes/shop.js');
@@ -15,20 +16,6 @@ const formatPrice = require('./utils/formatters.js');
 const app = express();
 
 const errorController = require('./controllers/error.js')
-
-//template engine dependency with express-handlebars
-// const { engine } = require('express-handlebars');
-
-// app.engine('hbs', engine({
-//     extname: 'hbs',
-//     defaultLayout: false
-// }));
-// app.set('view engine', 'hbs');
-//--
-
-//template engine dependency with PUG (Jade)
-// app.set('view engine', 'pug');
-//--
 
 // template engine ejs
 app.set('view engine', 'ejs');
@@ -53,11 +40,13 @@ app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.getNotFound);
+sequelize.sync() //sync models to database
+.then(result => {
+    console.log(result);
+    app.listen(3000) // express sinstax sugar
+})
+.catch(err => {
+    console.log(err);
+});
 
-//Express has methods for this
-//const routes = require('./routes');
-
-//const server = http.createServer(app);
-//server.listen(3000);
-app.listen(3000) // express sinstax sugar
 

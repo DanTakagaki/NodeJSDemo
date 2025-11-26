@@ -1,5 +1,7 @@
 const Product = require('../models/product');
 
+const DEFAULT_IMAGE = 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png';
+
 exports.getAddProduct = (req, res, next) => {
     // manual way
     // res.sendFile(path.join(rootDir, 'views', 'edit-product.html')); //express allow us to send response as result sintax sugar
@@ -16,14 +18,31 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-    const imageUrl = req.body.imageUrl;
+    const imageUrl = req.body.imageUrl || DEFAULT_IMAGE;
     const title = req.body.title;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(null, imageUrl, title, description, price);
-    product.save()
-    .then(() => {
-        res.redirect('/');//convenience express method
+
+    // Manually creating product 
+    // const product = new Product(null, imageUrl, title, description, price);
+    // product.save()
+    // .then(() => {
+    //     res.redirect('/');//convenience express method
+    // })
+    // .catch(err => {
+    //     console.log(err);
+    // });
+
+    // Using Sequelize create method
+    Product.create({
+        title: title,
+        price: price,
+        imageUrl: imageUrl,
+        description: description
+    })
+    .then(result => {
+        console.log(result);
+        res.redirect('/admin/products');
     })
     .catch(err => {
         console.log(err);
