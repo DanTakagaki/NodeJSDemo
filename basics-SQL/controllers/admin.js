@@ -33,13 +33,14 @@ exports.postAddProduct = (req, res, next) => {
     //     console.log(err);
     // });
 
-    // Using Sequelize create method
-    Product.create({
-        title: title,
-        price: price,
-        imageUrl: imageUrl,
-        description: description
-    })
+    // Using Sequelize create method based on relation with user
+    req.user
+        .createProduct({
+            title: title,
+            price: price,
+            imageUrl: imageUrl,
+            description: description
+        })
         .then(result => {
             console.log(result);
             res.redirect('/admin/products');
@@ -70,9 +71,10 @@ exports.getEditProduct = (req, res, next) => {
     // });
 
     // Sequelize way
-    Product.findByPk(productId)
-        .then((product) => {
-            if (product.length === 0) {
+    req.user
+        .getProducts({ where: { id: productId } })
+        .then((products) => {
+            if (products.length === 0) {
                 return res.status(404).render('404', {
                     pageTitle: 'Product Not Found',
                     path: '/products'
@@ -83,7 +85,7 @@ exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Edit Product',
                 path: '/admin/edit-product',
                 editing: editMode,
-                product: product
+                product: products[0]
             });
         })
         .catch(err => {
@@ -134,7 +136,19 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.findAll()
+    // Manual SQL way
+    // Product.findAll()
+    //     .then(products => {
+    //         res.render('admin/products', {
+    //             prods: products,
+    //             pageTitle: 'Admin Products',
+    //             path: '/admin/products'
+    //         });
+    //     })
+    //     .catch(err => console.log(err));
+
+    // Sequelize way
+    req.user.getProducts()
         .then(products => {
             res.render('admin/products', {
                 prods: products,
