@@ -138,9 +138,17 @@ exports.getCart = (req, res, next) => {
             return cart.getProducts()
         })
         .then(products => {
+            let totalPrice = 0;
+            products.forEach(element => {
+                const price = parseFloat(element.price.toString().replace('$', ''));
+                const quantity = element.cartItem.quantity;
+                totalPrice += price * quantity;
+            });
+            console.log('Total Price:', totalPrice);
             res.render('shop/cart', {
                 pageTitle: 'Your Cart',
                 products: products,
+                totalPrice: totalPrice.toFixed(2),
                 path: '/cart'
             });
         })
@@ -178,12 +186,12 @@ exports.postCart = (req, res, next) => {
                 .then(product => {
                     console.log('7. Product found:', product ? product.title : 'NOT FOUND');
                     return fetchedCart.addProduct(product, {
-                         through: { quantity: newQuantity }
-                        });
+                        through: { quantity: newQuantity }
+                    });
                 })
         })
         .then(() => {
-            res.redirect('/cart'); 
+            res.redirect('/cart');
         })
         .catch(err => {
             console.log('✗ ERROR:', err);
