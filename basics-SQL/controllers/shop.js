@@ -3,26 +3,59 @@ const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
     // Manual SQL way
-    Product.fetchAll()
-        .then(([rows, fieldData]) => {
-            console.log(rows)
+    // Product.fetchAll()
+    //     .then(([rows, fieldData]) => {
+    //         console.log(rows)
+    //         res.render('shop/product-list', {
+    //             prods: rows,
+    //             pageTitle: 'All Products',
+    //             path: '/products'
+    //         });
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //     });
+
+    // Sequelize way
+    Product.findAll()
+        .then(products => {
             res.render('shop/product-list', {
-                prods: rows,
+                prods: products,
                 pageTitle: 'All Products',
                 path: '/products'
             });
         })
-        .catch(err => {
-            console.log(err);
-        });
+        .catch(err => console.log(err));
 };
 
 exports.getProduct = (req, res, next) => {
+    // Manual SQL way
+    // const productId = req.params.productId;
+    // Product.findById(productId)
+    //     .then(([products]) => {
+    //         console.log(products);
+    //         if (products.length === 0) {
+    //             return res.status(404).render('404', {
+    //                 pageTitle: 'Product Not Found',
+    //                 path: '/products'
+    //             });
+    //         }
+
+    //         res.render('shop/product-details', {
+    //             product: products[0],
+    //             pageTitle: products.title,
+    //             path: '/products'
+    //         });
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //     });
+
     const productId = req.params.productId;
-    Product.findById(productId)
-        .then(([products]) => {
-            console.log(products);
-            if (products.length === 0) {
+    Product.findByPk(productId)
+         .then((product) => {
+            console.log(product);
+            if (product.length === 0) {
                 return res.status(404).render('404', {
                     pageTitle: 'Product Not Found',
                     path: '/products'
@@ -30,8 +63,8 @@ exports.getProduct = (req, res, next) => {
             }
 
             res.render('shop/product-details', {
-                product: products[0],
-                pageTitle: products.title,
+                product: product,
+                pageTitle: product.title,
                 path: '/products'
             });
         })

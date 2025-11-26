@@ -40,13 +40,13 @@ exports.postAddProduct = (req, res, next) => {
         imageUrl: imageUrl,
         description: description
     })
-    .then(result => {
-        console.log(result);
-        res.redirect('/admin/products');
-    })
-    .catch(err => {
-        console.log(err);
-    });
+        .then(result => {
+            console.log(result);
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -55,51 +55,114 @@ exports.getEditProduct = (req, res, next) => {
         return res.redirect('/');
     }
     const productId = req.params.productId;
-    Product.findById(productId, product => {
-        if (!product) {
-            return res.redirect('/');
-        }
-        res.render('admin/edit-product', {
-            pageTitle: 'Edit Product',
-            path: '/admin/edit-product',
-            editing: editMode,
-            product: product
+
+    // Manual SQL way
+    // Product.findById(productId, product => {
+    //     if (!product) {
+    //         return res.redirect('/');
+    //     }
+    //     res.render('admin/edit-product', {
+    //         pageTitle: 'Edit Product',
+    //         path: '/admin/edit-product',
+    //         editing: editMode,
+    //         product: product
+    //     });
+    // });
+
+    // Sequelize way
+    Product.findByPk(productId)
+        .then((product) => {
+            if (product.length === 0) {
+                return res.status(404).render('404', {
+                    pageTitle: 'Product Not Found',
+                    path: '/products'
+                });
+            }
+
+            res.render('admin/edit-product', {
+                pageTitle: 'Edit Product',
+                path: '/admin/edit-product',
+                editing: editMode,
+                product: product
+            });
+        })
+        .catch(err => {
+            console.log(err);
         });
-    });
 };
 
 exports.postEditProduct = (req, res, next) => {
+    // Manual SQL way
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
     const updatedImageUrl = req.body.imageUrl;
     const updatedPrice = req.body.price;
     const updatedDesc = req.body.description;
-    const updatedProduct = new Product(prodId, updatedImageUrl, updatedTitle, updatedDesc, updatedPrice);
-    updatedProduct.save()
-    .then(() => {
-        console.log('UPDATED PRODUCT!');
-        res.redirect('/admin/products');
-    })
-    .catch(err => {
-        console.log(err);
-    });
+    // manual sql way
+    // const updatedProduct = new Product(prodId, updatedImageUrl, updatedTitle, updatedDesc, updatedPrice);
+    // updatedProduct.save()
+    //     .then(() => {
+    //         console.log('UPDATED PRODUCT!');
+    //         res.redirect('/admin/products');
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //     });
     //
-    res.redirect('/admin/products');
+
+    Product.update(
+        {
+            title: updatedTitle,
+            price: updatedPrice,
+            imageUrl: updatedImageUrl,
+            description: updatedDesc
+        },
+        {
+            where: {
+                id: prodId
+            }
+        }
+    )
+        .then(() => {
+            console.log('UPDATED PRODUCT!');
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll(products => {
-        console.log(products);
-        res.render('admin/products', {
-            prods: products,
-            pageTitle: 'Admin Products',
-            path: '/admin/products'
-        });
-    });
+    Product.findAll()
+        .then(products => {
+            res.render('admin/products', {
+                prods: products,
+                pageTitle: 'Admin Products',
+                path: '/admin/products'
+            });
+        })
+        .catch(err => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
+    // Manual SQL way
+    // const prodId = req.body.productId;
+    // Product.deleteById(prodId);
+    // res.redirect('/admin/products');
+
+    // Sequelize way
     const prodId = req.body.productId;
-    Product.deleteById(prodId);
-    res.redirect('/admin/products');
+    Product.destroy({
+        where: {
+            id: prodId
+        }
+    })
+        .then(() => {
+            console.log('DELETED PRODUCT');
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            console.log(err);
+        });
 };
