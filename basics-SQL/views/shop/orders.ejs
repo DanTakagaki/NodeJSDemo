@@ -1,27 +1,54 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/product.css">
-    </head>
+    <link rel="stylesheet" href="/css/orders.css">
+</head>
 
-    <body>
-        <%- include('../includes/navigation.ejs') %>
-        <main>
-            <% if (orders.length <= 0 ) { %>
-                <h1>No Orders Found!</h1>
-            <% } else { %>
-                <ul>
-                    <% order.forEach => { %>
-                    <li>
-                        <h1># <%= order.id ></h1>
-                        <ul>
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <main>
+        <h1>Your Orders</h1>
+        
+        <% if (orders.length === 0) { %>
+            <div class="orders__empty">
+                <h2>No Orders Found!</h2>
+                <a href="/" class="btn">Start Shopping</a>
+            </div>
+        <% } else { %>
+            <ul class="orders-list">
+                <% orders.forEach(order => { %>
+                    <li class="order">
+                        <% 
+                            // Calculate order total
+                            let orderTotal = 0;
+                            order.products.forEach(item => {
+                                const price = parseFloat(item.price.toString().replace('$', ''));
+                                const quantity = item.orderItem.quantity;
+                                orderTotal += price * quantity;
+                            });
+                        %>
+                        
+                        <div class="order__header">
+                            <h2>Order #<%= order.id %></h2>
+                            <h2 class="order__total"><%= formatPrice(orderTotal) %></h2>
+                        </div>
+                        
+                        <ul class="order__items">
                             <% order.products.forEach(item => { %>
-                                <li>
-                                    <h2><%= item.title %> - <%= formatPrice(item.orderItem.productPrice) %> (x <%= item.orderItem.quantity %>)</h2>
+                                <% 
+                                    const price = parseFloat(item.price.toString().replace('$', ''));
+                                    const quantity = item.orderItem.quantity;
+                                    const subtotal = price * quantity;
+                                %>
+                                <li class="order__item">
+                                    <span class="order__item-title"><%= item.title %></span>
+                                    <span class="order__item-details">
+                                        <%= formatPrice(price) %> × <%= quantity %> = <%= formatPrice(subtotal) %>
+                                    </span>
                                 </li>
                             <% }); %>
                         </ul>
                     </li>
-                    <% }); %>
-                </ul>
-            <% } %>
-        </main>
-        <%- include('../includes/end.ejs') %>
+                <% }); %>
+            </ul>
+        <% } %>
+    </main>
+<%- include('../includes/end.ejs') %>
