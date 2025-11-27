@@ -11,6 +11,8 @@ const Product = require('./models/product.js');
 const User = require('./models/user.js');
 const Cart = require('./models/cart.js');
 const CartItem = require('./models/cart-item.js');
+const Order = require('./models/order.js');
+const OrderItem = require('./models/order-item.js');
 
 const adminRoutes = require('./routes/admin.js');
 const shopRoutes = require('./routes/shop.js');
@@ -62,6 +64,9 @@ User.hasOne(Cart);
 Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
 
 // Syncing database and starting server
 sequelize

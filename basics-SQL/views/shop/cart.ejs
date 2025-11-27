@@ -24,6 +24,9 @@
             </ul>
             <div class="cart-total">
                 <h3>Total Price: <%= formatPrice(totalPrice) %></h3>
+                <form action="/create-order" method="POST">
+                    <button type="submit" class="btn btn--accept">"Order Now!"</button>
+                </form>
             </div>
         <% } else { %>
             <h1>No Products in Cart!</h1>

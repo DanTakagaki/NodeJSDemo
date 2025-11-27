@@ -1,0 +1,27 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/product.css">
+    </head>
+
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+        <main>
+            <% if (orders.length <= 0 ) { %>
+                <h1>No Orders Found!</h1>
+            <% } else { %>
+                <ul>
+                    <% order.forEach => { %>
+                    <li>
+                        <h1># <%= order.id ></h1>
+                        <ul>
+                            <% order.products.forEach(item => { %>
+                                <li>
+                                    <h2><%= item.title %> - <%= formatPrice(item.orderItem.productPrice) %> (x <%= item.orderItem.quantity %>)</h2>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </li>
+                    <% }); %>
+                </ul>
+            <% } %>
+        </main>
+        <%- include('../includes/end.ejs') %>
