@@ -1,32 +1,27 @@
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
 
-// Manual way to connect to mysql database
+let _db;
 
-// require('dotenv').config();
-// const mysql = require('mysql2');
+const mongoConnect = (callback) => {
+    MongoClient.connect(process.env.MONGODB_URI)
+        .then(client => {
+            console.log('Connected to MongoDB');
+            _db = client.db();
+            callback();
+        })
+        .catch(err => {
+            console.log('Failed to connect to MongoDB', err);
+            throw err;
+        });
+};
 
-// const pool = mysql.createPool({
-//     host: process.env.DB_HOST,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_DATABASE,
-//     port: process.env.DB_PORT
-// });
-
-// module.exports = pool.promise();
-
-// Sequelize auotmatcly connect to mysql db
-
-const Sequelize = require('sequelize');
-
-const sequalize = new Sequelize(
-    process.env.DB_DATABASE,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        dialect: 'mysql',
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT
+const getDb = () => {
+    if (_db) {
+        return _db;
     }
-);
+    throw 'No database found!';
+};
 
-module.exports = sequalize;
+exports.mongoConnect = mongoConnect;
+exports.getDb = getDb;
