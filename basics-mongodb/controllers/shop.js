@@ -1,23 +1,10 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
+//const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
-    // Manual SQL way
-    // Product.fetchAll()
-    //     .then(([rows, fieldData]) => {
-    //         console.log(rows)
-    //         res.render('shop/product-list', {
-    //             prods: rows,
-    //             pageTitle: 'All Products',
-    //             path: '/products'
-    //         });
-    //     })
-    //     .catch(err => {
-    //         console.log(err);
-    //     });
 
     // Sequelize way
-    Product.findAll()
+    Product.fetchAll()
         .then(products => {
             res.render('shop/product-list', {
                 prods: products,
@@ -29,30 +16,8 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-    // Manual SQL way
-    // const productId = req.params.productId;
-    // Product.findById(productId)
-    //     .then(([products]) => {
-    //         console.log(products);
-    //         if (products.length === 0) {
-    //             return res.status(404).render('404', {
-    //                 pageTitle: 'Product Not Found',
-    //                 path: '/products'
-    //             });
-    //         }
-
-    //         res.render('shop/product-details', {
-    //             product: products[0],
-    //             pageTitle: products.title,
-    //             path: '/products'
-    //         });
-    //     })
-    //     .catch(err => {
-    //         console.log(err);
-    //     });
-
     const productId = req.params.productId;
-    Product.findByPk(productId)
+    Product.findById(productId)
         .then((product) => {
             console.log(product);
             if (!product) {
@@ -74,22 +39,8 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-    // Manual SQL way
-    // Product.fetchAll()
-    //     .then(([rows, fieldData]) => {
-    //         console.log(rows)
-    //         res.render('shop/index', {
-    //             prods: rows,
-    //             pageTitle: 'Shop',
-    //             path: '/'
-    //         });
-    //     })
-    //     .catch(err => {
-    //         console.log(err);
-    //     });
-
     // Sequelize way
-    Product.findAll()
+    Product.fetchAll()
         .then(products => {
             res.render('shop/index', {
                 prods: products,
