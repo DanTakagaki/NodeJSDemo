@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:local": "nodemon ./basics-locally/app.js",
-    "start:mysql": "nodemon ./basics-sql/app.js"
+    "start:mysql": "nodemon ./basics-sql/app.js",
+    "start:mongodb": "nodemon ./basics-mongodb/app.js"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
