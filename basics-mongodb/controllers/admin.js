@@ -97,13 +97,8 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.postDeleteProduct = (req, res, next) => {
-    // Sequelize way
     const prodId = req.body.productId;
-    Product.destroy({
-        where: {
-            id: prodId
-        }
-    })
+    Product.deleteById(prodId)
         .then(() => {
             console.log('DELETED PRODUCT');
             res.redirect('/admin/products');
