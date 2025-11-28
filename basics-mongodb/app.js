@@ -1,8 +1,6 @@
-const http = require('http');
-const bodyParser = require('body-parser');
-const path = require('path');
-
 const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path')
 
 require('dotenv').config();
 const mysql = require('mysql2');
@@ -17,6 +15,7 @@ const app = express();
 const errorController = require('./controllers/error.js')
 
 const mongoConnect = require('./utils/database.js').mongoConnect;
+const User = require('./models/user.js');
 
 // template engine ejs
 app.set('view engine', 'ejs');
@@ -38,14 +37,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Fetch user for each request
 app.use((req, res, next) => {
-    // User.findOne({ where: { email: 'taka@test.com' } })
-    //     .then(user => {
-    //         req.user = user;
-    //         next();
-    //     })
-    //     .catch(err => console.log(err));
-
-    next();
+    User.findById('6928d9eb9f2bd2fa3a348726')
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err));
 });
 
 //Adding filters in express to add paths
