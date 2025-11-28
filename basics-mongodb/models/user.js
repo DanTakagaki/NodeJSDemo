@@ -23,7 +23,6 @@ class User {
         }
 
         return dbOp
-            .insertOne(this)
             .then(result => {
                 console.log(result);
             })
@@ -63,15 +62,15 @@ class User {
             //Product exists in cart, increase quantity
             newQuantity = this.cart.items[cartProductIndex].quantity + 1;
             updatedCartItems[cartProductIndex].quantity = newQuantity;
-        }else {
+        } else {
             //Product not in cart, add new
             updatedCartItems.push({
                 productId: new ObjectId(product._id),
                 quantity: newQuantity
             });
-        }    
-        
-        const updatedCart = { 
+        }
+
+        const updatedCart = {
             items: updatedCartItems
         };
         const db = getDb();
@@ -93,7 +92,7 @@ class User {
                 { $set: { cart: { items: updatedCartItems } } }
             );
     }
-    
+
     static findById(id) {
         const db = getDb();
         return db.collection('users')
@@ -106,6 +105,48 @@ class User {
                 console.log(err);
             });
     };
+
+    addOrder() {
+        const db = getDb();
+        return this.getCart()
+            .then(products => {
+                const order = {
+                    items: products,
+                    user: {
+                        _id: new ObjectId(this._id),
+                        username: this.username
+                    }
+                };
+                return db.collection('orders')
+                    .insertOne(order)
+            })
+            .then(result => {
+                this.cart = { items: [] };
+
+                return db.collection('users')
+                    .updateOne(
+                        { _id: this._id },
+                        { $set: { cart: { items: [] } } }
+                    );
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    getOrders() {
+        const db = getDb();
+        return db.collection('orders')
+            .find({ 'user._id': new ObjectId(this._id) })
+            .toArray()
+            .then(orders => {
+                console.log(orders);
+                return orders;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
 }
 
 module.exports = User;

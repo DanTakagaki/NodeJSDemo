@@ -19,23 +19,23 @@
                         <% 
                             // Calculate order total
                             let orderTotal = 0;
-                            order.products.forEach(item => {
+                            order.items.forEach(item => {
                                 const price = parseFloat(item.price.toString().replace('$', ''));
-                                const quantity = item.orderItem.quantity;
+                                const quantity = item.quantity;
                                 orderTotal += price * quantity;
                             });
                         %>
                         
                         <div class="order__header">
-                            <h2>Order #<%= order.id %></h2>
+                            <h2>Order #<%= order._id %></h2>
                             <h2 class="order__total"><%= formatPrice(orderTotal) %></h2>
                         </div>
                         
                         <ul class="order__items">
-                            <% order.products.forEach(item => { %>
+                            <% order.items.forEach(item => { %>
                                 <% 
                                     const price = parseFloat(item.price.toString().replace('$', ''));
-                                    const quantity = item.orderItem.quantity;
+                                    const quantity = item.quantity;
                                     const subtotal = price * quantity;
                                 %>
                                 <li class="order__item">
