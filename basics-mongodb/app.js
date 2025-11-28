@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path')
+const path = require('path');
+const mongoose = require('mongoose');
 
 require('dotenv').config();
 const mysql = require('mysql2');
@@ -14,8 +15,9 @@ const app = express();
 
 const errorController = require('./controllers/error.js')
 
-const mongoConnect = require('./utils/database.js').mongoConnect;
-const User = require('./models/user.js');
+// Default mongodb without ODM Mongoose
+// const mongoConnect = require('./utils/database.js').mongoConnect;
+// const User = require('./models/user.js');
 
 // template engine ejs
 app.set('view engine', 'ejs');
@@ -36,14 +38,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Fetch user for each request
-app.use((req, res, next) => {
-    User.findById('6928d9eb9f2bd2fa3a348726')
-        .then(user => {
-            req.user = new User(user.username, user.email, user.cart ,user._id);
-            next();
-        })
-        .catch(err => console.log(err));
-});
+// app.use((req, res, next) => {
+//     User.findById('6928d9eb9f2bd2fa3a348726')
+//         .then(user => {
+//             req.user = new User(user.username, user.email, user.cart ,user._id);
+//             next();
+//         })
+//         .catch(err => console.log(err));
+// });
 
 //Adding filters in express to add paths
 app.use('/admin', adminRoutes);
@@ -51,6 +53,17 @@ app.use(shopRoutes);
 
 app.use(errorController.getNotFound);
 
-mongoConnect(() => {
+// Manual way
+// mongoConnect(() => {
+//     app.listen(3000);
+// });
+
+// Mongoose way
+mongoose
+.connect(process.env.MONGODB_URI)
+.then(result => {
     app.listen(3000);
-});
+})
+.catch(err => {
+    console.log(err);
+})

@@ -18,8 +18,20 @@ exports.postAddProduct = (req, res, next) => {
     const title = req.body.title;
     const description = req.body.description;
     const price = req.body.price;
-    const userId = req.user._id;
-    const product = new Product(title, price, description, imageUrl, null, userId);
+    // Default way
+    // const userId = req.user._id;
+    // const product = new Product(title, price, description, imageUrl, null, userId);
+    // product.save()
+    //     .then(result => {
+    //         console.log(result);
+    //         res.redirect('/admin/products');
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //     });
+
+    // Mongoose way ODM
+    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl });
     product.save()
         .then(result => {
             console.log(result);
