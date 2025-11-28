@@ -12,11 +12,11 @@
                         <h3 class="cart-item__title"><%= p.title %></h3>
                         <div class="cart-item__details">
                             <span class="cart-item__price"><%= formatPrice(p.price) %></span>
-                            <span class="cart-item__quantity">× <%= p.cartItem.quantity %></span>
-                            <span class="cart-item__subtotal"><%= formatPrice(p.price * p.cartItem.quantity) %></span>
+                            <span class="cart-item__quantity">× <%= p.quantity %></span>
+                            <span class="cart-item__subtotal"><%= formatPrice(p.price * p.quantity) %></span>
                         </div>
                         <form action="/cart-delete-item" method="POST" class="cart-item__delete">
-                            <input type="hidden" value="<%= p.id %>" name="productId">
+                            <input type="hidden" value="<%= p._id %>" name="productId">
                             <button class="btn btn--danger" type="submit">Delete</button>
                         </form>
                     </li>
