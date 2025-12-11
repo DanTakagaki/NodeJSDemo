@@ -17,7 +17,7 @@ const errorController = require('./controllers/error.js')
 
 // Default mongodb without ODM Mongoose
 // const mongoConnect = require('./utils/database.js').mongoConnect;
-// const User = require('./models/user.js');
+const User = require('./models/user.js');
 
 // template engine ejs
 app.set('view engine', 'ejs');
@@ -38,14 +38,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Fetch user for each request
-// app.use((req, res, next) => {
-//     User.findById('6928d9eb9f2bd2fa3a348726')
-//         .then(user => {
-//             req.user = new User(user.username, user.email, user.cart ,user._id);
-//             next();
-//         })
-//         .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+    User.findById('693b30b561986de4a3bb6493')
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err));
+});
 
 //Adding filters in express to add paths
 app.use('/admin', adminRoutes);
@@ -60,10 +60,23 @@ app.use(errorController.getNotFound);
 
 // Mongoose way
 mongoose
-.connect(process.env.MONGODB_URI)
-.then(result => {
-    app.listen(3000);
-})
-.catch(err => {
-    console.log(err);
-})
+    .connect(process.env.MONGODB_URI)
+    .then(result => {
+        return User.findOne({ email: 'taka@mail.com' });
+    })
+    .then(user => {
+        if (!user) {
+            const user = new User({
+                name: "Taka",
+                email: "taka@mail.com",
+                cart: {
+                    items: []
+                }
+            });
+            user.save();
+        }
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    })

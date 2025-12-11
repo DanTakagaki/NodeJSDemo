@@ -32,8 +32,9 @@ exports.postAddProduct = (req, res, next) => {
     //     });
 
     // Mongoose way ODM
-    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl });
-    product.save()
+    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user});
+    product
+        .save()
         .then(result => {
             console.log(result);
             res.redirect('/admin/products');
@@ -78,20 +79,20 @@ exports.postEditProduct = (req, res, next) => {
     const updatedDesc = req.body.description;
 
     Product.findById(prodId)
-    .then(product => {
-        product.title = updatedTitle
-        product.price = updatedPrice
-        product.imageUrl = updatedImageUrl
-        product.description = updatedDesc
-        return product.save();//mongoose method
-    })
-    .then(() => {
-        console.log('UPDATED PRODUCT!');
-        res.redirect('/admin/products');
-    })
-    .catch(err => {
-        console.log(err);
-    });
+        .then(product => {
+            product.title = updatedTitle
+            product.price = updatedPrice
+            product.imageUrl = updatedImageUrl
+            product.description = updatedDesc
+            return product.save();//mongoose method
+        })
+        .then(() => {
+            console.log('UPDATED PRODUCT!');
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            console.log(err);
+        });
 
 };
 
