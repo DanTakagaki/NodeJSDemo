@@ -32,7 +32,7 @@ exports.postAddProduct = (req, res, next) => {
     //     });
 
     // Mongoose way ODM
-    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user});
+    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user });
     product
         .save()
         .then(result => {
@@ -98,7 +98,10 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
     Product.find()
+        //.select('title price imageUrl') //Filter out properties
+        // .populate('userId', 'name') //add data from mapped object
         .then(products => {
+            console.log(products)
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',

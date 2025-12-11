@@ -81,11 +81,16 @@ exports.getCart = (req, res, next) => {
     console.log(req.user.cart);
 
     req.user
-        .getCart()
-        .then(products => {
+        // without mongoose
+        // .getCart()
+        // With Mongoose
+        .populate('cart.items.productId')
+        .then(user => {
+            const products = user.cart.items;
+
             let totalPrice = 0;
             products.forEach(element => {
-                const price = parseFloat(element.price.toString().replace('$', ''));
+                const price = parseFloat(element.productId.price.toString().replace('$', ''));
                 const quantity = element.quantity;
                 totalPrice += price * quantity;
             });
