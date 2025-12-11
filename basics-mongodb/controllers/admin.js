@@ -1,3 +1,4 @@
+const product = require('../models/product');
 const Product = require('../models/product');
 
 const DEFAULT_IMAGE = 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png';
@@ -76,28 +77,26 @@ exports.postEditProduct = (req, res, next) => {
     const updatedPrice = req.body.price;
     const updatedDesc = req.body.description;
 
-    const product = new Product(
-        updatedTitle,
-        updatedPrice,
-        updatedDesc,
-        updatedImageUrl,
-        prodId
-    );
-
-    product
-        .save()
-        .then(() => {
-            console.log('UPDATED PRODUCT!');
-            res.redirect('/admin/products');
-        })
-        .catch(err => {
-            console.log(err);
-        });
+    Product.findById(prodId)
+    .then(product => {
+        product.title = updatedTitle
+        product.price = updatedPrice
+        product.imageUrl = updatedImageUrl
+        product.description = updatedDesc
+        return product.save();//mongoose method
+    })
+    .then(() => {
+        console.log('UPDATED PRODUCT!');
+        res.redirect('/admin/products');
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('admin/products', {
                 prods: products,
