@@ -19,8 +19,8 @@
                         <% 
                             // Calculate order total
                             let orderTotal = 0;
-                            order.items.forEach(item => {
-                                const price = parseFloat(item.price.toString().replace('$', ''));
+                            order.products.forEach(item => {
+                                const price = parseFloat(item.product.price.toString().replace('$', ''));
                                 const quantity = item.quantity;
                                 orderTotal += price * quantity;
                             });
@@ -32,9 +32,9 @@
                         </div>
                         
                         <ul class="order__items">
-                            <% order.items.forEach(item => { %>
+                            <% order.products.forEach(item => { %>
                                 <% 
-                                    const price = parseFloat(item.price.toString().replace('$', ''));
+                                    const price = parseFloat(item.product.price.toString().replace('$', ''));
                                     const quantity = item.quantity;
                                     const subtotal = price * quantity;
                                 %>
