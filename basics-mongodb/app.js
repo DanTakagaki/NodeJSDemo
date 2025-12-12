@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoDBStore = require('connect-mongodb-session')(session);
+const { MongoStore } = require('connect-mongo');
 
 require('dotenv').config();
 const mysql = require('mysql2');
@@ -15,10 +15,6 @@ const authRoutes = require('../basics-mongodb/routes/auth.js');
 const formatPrice = require('./utils/formatters.js');
 
 const app = express();
-const store = new MongoDBStore({
-    uri: process.env.MONGODB_URI,
-    collection: 'sessions'
-});
 
 const errorController = require('./controllers/error.js')
 
@@ -43,13 +39,21 @@ app.use('/', (req, res, next) => {
 });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: process.env.SESSION_HASH, resave: false, saveUninitialized: false, store: store}));
+
+app.use(session({
+    secret: process.env.SESSION_HASH,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions'
+    })
+}));
 
 //Adding filters in express to add paths
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-
 app.use(errorController.getNotFound);
 
 // Manual way
@@ -61,6 +65,8 @@ app.use(errorController.getNotFound);
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(result => {
+
+
         return User.findOne({ email: 'taka@mail.com' });
     })
     .then(user => {

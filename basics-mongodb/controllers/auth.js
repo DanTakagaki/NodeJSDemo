@@ -18,3 +18,15 @@ exports.postLogin = (req, res, next) => {
         })
         .catch(err => console.log(err));
 };
+
+exports.postLogout = (req, res, next) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.log('Session destroy error:', err);
+            return next(err);
+        }
+        console.log('✅ Session destroyed successfully');
+        res.clearCookie('connect.sid'); // Clear the session cookie
+        res.redirect('/');
+    });
+};
