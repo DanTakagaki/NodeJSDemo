@@ -12,7 +12,7 @@
         </div>
         <h2><%= formatPrice(product.price) %></h2>
         <p><%= product.description %></p>
-        <% if (product) { %>
+        <% if (product && isAuthenticated) { %>
         <%- include('../includes/add-to-cart.ejs') %>
         <% } %>
     </main>

@@ -21,7 +21,7 @@ exports.postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     // Default way
-    // const userId = req.session.user._id;
+    // const userId = req.user._id;
     // const product = new Product(title, price, description, imageUrl, null, userId);
     // product.save()
     //     .then(result => {
@@ -33,7 +33,7 @@ exports.postAddProduct = (req, res, next) => {
     //     });
 
     // Mongoose way ODM
-    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl, userId: req.session.user });
+    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user });
     product
         .save()
         .then(result => {
