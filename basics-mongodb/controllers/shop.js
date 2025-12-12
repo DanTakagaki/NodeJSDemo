@@ -82,9 +82,9 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    console.log(req.sessions.user.cart);
+    console.log(req.session.user.cart);
 
-    req.user
+    req.session.user
         // without mongoose
         // .getCart()
         // With Mongoose
@@ -113,7 +113,7 @@ exports.postCart = (req, res, next) => {
     const productId = req.body.productId;
     Product.findById(productId)
         .then(product => {
-            return req.user
+            return req.session.user
                 .addToCart(product);
         })
         .then(result => {
@@ -127,7 +127,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
-    req.user
+    req.session.user
         .deleteItemFromCart(productId)
         .then(result => {
             res.redirect('/cart');
@@ -136,7 +136,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-    req.user
+    req.session.user
         .populate('cart.items.productId')
         .then(user => {
             const products = user.cart.items.map(i => {
@@ -144,15 +144,15 @@ exports.postOrder = (req, res, next) => {
             });
             const order = new Order({
                 user: {
-                    name: req.user.name,
-                    userId: req.user._id
+                    name: req.session.user.name,
+                    userId: req.session.user._id
                 },
                 products: products
             });
             return order.save();
         })
         .then(result => {
-            return req.user.clearCart();
+            return req.session.user.clearCart();
         })
         .then(result => {
             res.redirect('/orders');
@@ -165,7 +165,7 @@ exports.postOrder = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
     Order
-        .find({ "user.userId": req.user._id })
+        .find({ "user.userId": req.session.user._id })
         .then(orders => {
             res.render('shop/orders', {
                 pageTitle: 'Your Orders',
