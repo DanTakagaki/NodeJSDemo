@@ -30,9 +30,18 @@ main {
   height: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
 }
 
 .main-header__item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.main-header__item-rigth-item {
   list-style: none;
   margin: 0;
   padding: 0;
